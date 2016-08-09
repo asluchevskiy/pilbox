@@ -146,6 +146,7 @@ To see a list of all available options, run
       --progressive              default to progressive when saving
       --proxy_host               proxy hostname
       --proxy_port               proxy port
+      --remove_channel           remove alpha channel
       --quality                  default jpeg quality, 1-99 or keep
       --retain                   default adaptive retain percent, 1-99
       --timeout                  timeout of requests in seconds (default 10)
