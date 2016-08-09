@@ -146,8 +146,8 @@ To see a list of all available options, run
       --progressive              default to progressive when saving
       --proxy_host               proxy hostname
       --proxy_port               proxy port
-      --remove_channel           remove alpha channel
       --quality                  default jpeg quality, 1-99 or keep
+      --remove_alpha             remove alpha channel (default False)
       --retain                   default adaptive retain percent, 1-99
       --timeout                  timeout of requests in seconds (default 10)
       --validate_cert            validate certificates (default True)
@@ -612,6 +612,7 @@ Changelog
 -  1.1.9: Increase Pillow version to 2.8.1
 -  1.1.10: Add ca_certs option
 -  1.1.11: Added support for TIFF
+-  1.1.12: Added alpha channel removing support
 
 TODO
 ====

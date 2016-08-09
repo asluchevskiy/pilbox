@@ -208,11 +208,14 @@ class Image(object):
         return self
 
     def _remove_alpha_channel(self, background):
-        if self.img.mode != 'RGB':
-            logger.debug('removing alpha channel')
-            background = PIL.Image.new("RGB", self.img.size, color_hex_to_dec_tuple(background))
-            background.paste(self.img, mask=self.img.split()[3]) # 3 is the alpha channel
-            self.img = background
+        try:
+            if self.img.mode != "RGB":
+                # logger.debug("removing alpha channel")
+                background = PIL.Image.new("RGB", self.img.size, color_hex_to_dec_tuple(background))
+                background.paste(self.img, mask=self.img.split()[3])  # 3 is the alpha channel
+                self.img = background
+        except:
+            pass
 
 
     def rotate(self, deg, **kwargs):
