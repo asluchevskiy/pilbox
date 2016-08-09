@@ -73,6 +73,7 @@ define("content_type_from_image",
 
 # default image option settings
 define("background", help="default hexadecimal bg color (RGB or ARGB)")
+define("remove_alpha", help="remove alpha changel from the source image", type=bool, default=False)
 define("expand", help="default to expand when rotating", type=int)
 define("filter", help="default filter to use when resizing")
 define("format", help="default format to use when outputting")
@@ -99,6 +100,7 @@ class PilboxApplication(tornado.web.Application):
             allowed_operations=set(
                 options.allowed_operations or ImageHandler.OPERATIONS),
             background=options.background,
+            remove_alpha=options.remove_alpha,
             expand=options.expand,
             filter=options.filter,
             format=options.format,
@@ -272,6 +274,7 @@ class ImageHandler(tornado.web.RequestHandler):
                  filter=self.get_argument("filter"),
                  position=self.get_argument("pos"),
                  background=self.get_argument("bg"),
+                 remove_alpha=None,
                  retain=self.get_argument("retain")))
 
     def _get_rotate_options(self):

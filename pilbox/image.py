@@ -75,7 +75,7 @@ class Image(object):
     POSITIONS = _positions_to_ratios.keys()
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
-                     format=None, mode="crop", optimize=False,
+                     format=None, mode="crop", optimize=False, remove_alpha=False,
                      position="center", quality=90, progressive=False,
                      retain=75, preserve_exif=False)
     _CLASSIFIER_PATH = os.path.join(
@@ -193,6 +193,8 @@ class Image(object):
         """
         opts = Image._normalize_options(kwargs)
         size = self._get_size(width, height)
+        if opts["remove_alpha"]:
+            self._remove_alpha_channel(background=opts["background"])
         if opts["mode"] == "adapt":
             self._adapt(size, opts)
         elif opts["mode"] == "clip":
@@ -204,6 +206,14 @@ class Image(object):
         else:
             self._crop(size, opts)
         return self
+
+    def _remove_alpha_channel(self, background):
+        if self.img.mode != 'RGB':
+            logger.debug('removing alpha channel')
+            background = PIL.Image.new("RGB", self.img.size, color_hex_to_dec_tuple(background))
+            background.paste(self.img, mask=self.img.split()[3]) # 3 is the alpha channel
+            self.img = background
+
 
     def rotate(self, deg, **kwargs):
         """ Rotates the image clockwise around its center.  Returns the
@@ -373,7 +383,6 @@ class Image(object):
         if not opts["pil"]["position"]:
             opts["pil"]["position"] = _positions_to_ratios.get(
                 opts["position"], None)
-
         return opts
 
     @staticmethod
