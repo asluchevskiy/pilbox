@@ -1,0 +1,6 @@
+max_requests = 50
+timeout = 7.5
+allowed_hosts = []
+background = 'fff'
+validate_cert = False
+remove_alpha = True
