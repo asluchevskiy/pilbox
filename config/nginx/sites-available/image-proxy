@@ -1,0 +1,11 @@
+server {
+    listen 80;
+    server_name image-proxy-domain;
+
+    location / {
+        proxy_pass      http://localhost:8888;
+        proxy_cache images;
+        proxy_cache_key $request_uri;
+        proxy_cache_valid 360m;
+    }
+}
