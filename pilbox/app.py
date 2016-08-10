@@ -226,6 +226,7 @@ class ImageHandler(tornado.web.RequestHandler):
             return (resp.buffer, None)
 
         image = Image(resp.buffer)
+        self._image_remove_alpha(image)
         for operation in ops:
             if operation == "resize":
                 self._image_resize(image)
@@ -242,6 +243,11 @@ class ImageHandler(tornado.web.RequestHandler):
     def _image_resize(self, image):
         opts = self._get_resize_options()
         image.resize(self.get_argument("w"), self.get_argument("h"), **opts)
+
+    def _image_remove_alpha(self, image):
+        opts = self._get_remove_alpha_options()
+        if opts['remove_alpha']:
+            image._remove_alpha_channel(background=opts['background'])
 
     def _image_rotate(self, image):
         opts = self._get_rotate_options()
@@ -274,12 +280,15 @@ class ImageHandler(tornado.web.RequestHandler):
                  filter=self.get_argument("filter"),
                  position=self.get_argument("pos"),
                  background=self.get_argument("bg"),
-                 remove_alpha=None,
                  retain=self.get_argument("retain")))
 
     def _get_rotate_options(self):
         return self._get_options(
             dict(expand=self.get_argument("expand")))
+
+    def _get_remove_alpha_options(self):
+        return self._get_options(dict(background=self.get_argument("bg"),
+                                      remove_alpha=None))
 
     def _get_save_options(self):
         return self._get_options(

@@ -613,6 +613,7 @@ Changelog
 -  1.1.10: Add ca_certs option
 -  1.1.11: Added support for TIFF
 -  1.1.12: Added alpha channel removing support
+-  1.1.13: Added original image size keeping
 
 TODO
 ====

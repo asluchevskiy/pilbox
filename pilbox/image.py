@@ -75,7 +75,7 @@ class Image(object):
     POSITIONS = _positions_to_ratios.keys()
 
     _DEFAULTS = dict(background="fff", expand=False, filter="antialias",
-                     format=None, mode="crop", optimize=False, remove_alpha=False,
+                     format=None, mode="crop", optimize=False,
                      position="center", quality=90, progressive=False,
                      retain=75, preserve_exif=False)
     _CLASSIFIER_PATH = os.path.join(
@@ -100,7 +100,7 @@ class Image(object):
     @staticmethod
     def validate_dimensions(width, height):
         if not width and not height:
-            raise errors.DimensionsError("Missing dimensions")
+            pass  # raise errors.DimensionsError("Missing dimensions")
         elif width and not str(width).isdigit():
             raise errors.DimensionsError("Invalid width: %s" % width)
         elif height and not str(height).isdigit():
@@ -193,8 +193,6 @@ class Image(object):
         """
         opts = Image._normalize_options(kwargs)
         size = self._get_size(width, height)
-        if opts["remove_alpha"]:
-            self._remove_alpha_channel(background=opts["background"])
         if opts["mode"] == "adapt":
             self._adapt(size, opts)
         elif opts["mode"] == "clip":
@@ -207,16 +205,13 @@ class Image(object):
             self._crop(size, opts)
         return self
 
-    def _remove_alpha_channel(self, background):
-        try:
-            if self.img.mode != "RGB":
-                # logger.debug("removing alpha channel")
-                background = PIL.Image.new("RGB", self.img.size, color_hex_to_dec_tuple(background))
-                background.paste(self.img, mask=self.img.split()[3])  # 3 is the alpha channel
-                self.img = background
-        except:
-            pass
-
+    def _remove_alpha_channel(self, **kwargs):
+        opts = Image._normalize_options(kwargs)
+        if self.img.mode != "RGB" and len(self.img.split()) > 3:
+            # logger.debug("removing alpha channel")
+            background = PIL.Image.new("RGB", self.img.size, color_hex_to_dec_tuple(opts["background"]))
+            background.paste(self.img, mask=self.img.split()[3])  # 3 is the alpha channel
+            self.img = background
 
     def rotate(self, deg, **kwargs):
         """ Rotates the image clockwise around its center.  Returns the
@@ -329,6 +324,8 @@ class Image(object):
         self.img = self.img.resize(size, opts["pil"]["filter"])
 
     def _get_size(self, width, height):
+        if not width and not height:
+            return self.img.size
         aspect_ratio = self.img.size[0] / self.img.size[1]
         if not width:
             width = int((int(height) or self.img.size[1]) * aspect_ratio)
